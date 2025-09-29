@@ -1,11 +1,17 @@
-public class Horse {
-    private String name;
-    private int birthYear;
+import java.time.Year;
 
-    // horse constructor needs its name and birth year.
-    public Horse(String horseName, int year){
-        name = horseName; // assigns the name of the horse to the horseName
-        birthYear = year; // assigns the year to the birthYear
+/**
+ * Simple Horse model used for the assignment.
+ * Constructor: oWeN
+ */
+public class Horse {
+    private final String name;
+    private final int birthYear;
+
+    public Horse(String name, int birthYear) {
+        if (name == null) throw new IllegalArgumentException("name cannot be null");
+        this.name = name;
+        this.birthYear = birthYear;
     }
 
     public String getName() {
@@ -16,13 +22,16 @@ public class Horse {
         return birthYear;
     }
 
-    // returns age given the current year
     public int getAge(int currentYear) {
         return currentYear - birthYear;
     }
 
+    public int getAge() {
+        return getAge(Year.now().getValue());
+    }
+
     @Override
     public String toString() {
-        return "Horse{name='" + name + "', birthYear=" + birthYear + "}";
+        return String.format("Horse{name='%s', birthYear=%d}", name, birthYear);
     }
 }
