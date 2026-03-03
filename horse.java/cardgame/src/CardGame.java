@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class CardGame {
 
@@ -84,15 +85,24 @@ public class CardGame {
         }
 
         public Card dealCard() {
+            if (cards.isEmpty()) {
+                return null;
+            }
             return cards.remove(cards.size() - 1);
         }
 
         public List<Card> dealHand(int numCards) {
             List<Card> hand = new ArrayList<>();
             for (int i = 0; i < numCards; i++) {
-                hand.add(dealCard());
+                Card c = dealCard();
+                if (c == null) break;
+                hand.add(c);
             }
             return hand;
+        }
+
+        public boolean isEmpty() {
+            return cards.isEmpty();
         }
     }
 
@@ -110,6 +120,12 @@ public class CardGame {
 
         public void receiveHand(List<Card> newHand) {
             hand = newHand;
+        }
+
+        public void addCard(Card c) {
+            if (c != null) {
+                hand.add(c);
+            }
         }
 
         public void showHand() {
@@ -140,18 +156,21 @@ public class CardGame {
         private int cardsPerHand;
         private List<Player> players = new ArrayList<>();
         private Deck deck;
+        private Scanner sc;
 
-        public Game(int numPlayers, int cardsPerHand) {
-            this.numPlayers = numPlayers;
+        public Game(List<String> names, int cardsPerHand, Scanner sc) {
+            this.numPlayers = names.size();
             this.cardsPerHand = cardsPerHand;
+            this.sc = sc;
             deck = new Deck();
 
             for (int i = 0; i < numPlayers; i++) {
-                players.add(new Player("Player " + (i + 1)));
+                players.add(new Player(names.get(i)));
             }
         }
 
         public void dealHands() {
+            deck = new Deck(); // fresh deck each round
             deck.shuffle();
             for (Player p : players) {
                 p.receiveHand(deck.dealHand(cardsPerHand));
@@ -182,19 +201,100 @@ public class CardGame {
         }
 
         public void play() {
+            System.out.println("\n--- NEW ROUND ---");
             System.out.println("Dealing cards...\n");
             dealHands();
             displayHands();
+
+            // offer each player additional cards
+            for (Player p : players) {
+                boolean another = true;
+                while (another && !deck.isEmpty()) {
+                    String ans = getYesNo("" + p.getName() + ", do you want another card? (yes/no): ");
+                    if (ans.equals("yes")) {
+                        Card card = deck.dealCard();
+                        p.addCard(card);
+                        System.out.println(p.getName() + " received " + card);
+                    } else {
+                        another = false;
+                    }
+                }
+                if (deck.isEmpty()) {
+                    System.out.println("Deck is empty. No more cards can be drawn.");
+                }
+            }
+
+            displayHands();
             determineWinner();
         }
+
+        // helper inside Game class to reuse scanner
+        private String getYesNo(String prompt) {
+            while (true) {
+                System.out.print(prompt);
+                String line = sc.nextLine().trim().toLowerCase();
+                if (line.startsWith("y")) return "yes";
+                if (line.startsWith("n")) return "no";
+                System.out.println("Please answer 'yes' or 'no'.");
+            }
+        }
+    }
+
+    // -----------------------------
+    // utility input helpers
+    // -----------------------------
+    private static int getIntInput(Scanner sc, String prompt, int min, int max) {
+        int value = 0;
+        while (true) {
+            System.out.print(prompt);
+            try {
+                value = sc.nextInt();
+                sc.nextLine(); // consume newline
+                if ((min <= value && value <= max) || (min == -1 && max == -1)) {
+                    return value;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (java.util.InputMismatchException ime) {
+                System.out.println("That's not a valid number. Try again.");
+                sc.nextLine(); // discard invalid token
+            }
+        }
+    }
+
+    private static String getStringInput(Scanner sc, String prompt) {
+        System.out.print(prompt);
+        return sc.nextLine();
     }
 
     // -----------------------------
     // Main Method
     // -----------------------------
     public static void main(String[] args) {
-        // 5 players, 5 cards each (can change to 6 or 7 if desired)
-        Game game = new Game(5, 5);
-        game.play();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Welcome to the Card Game!");
+
+        int numPlayers = getIntInput(sc, "How many players? (2-6): ", 2, 6);
+        int cardsPerHand = getIntInput(sc, "How many cards per hand? (1-7): ", 1, 7);
+
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+            String name = getStringInput(sc, "Enter name for player " + (i + 1) + ": ");
+            if (name.trim().isEmpty()) {
+                name = "Player " + (i + 1);
+            }
+            names.add(name);
+        }
+
+        Game game = new Game(names, cardsPerHand, sc);
+        boolean keepPlaying = true;
+        while (keepPlaying) {
+            game.play();
+            String again = getStringInput(sc, "Play another round? (yes/no): ").trim().toLowerCase();
+            keepPlaying = again.startsWith("y");
+        }
+
+        System.out.println("Thanks for playing!");
+        sc.close();
     }
 }
