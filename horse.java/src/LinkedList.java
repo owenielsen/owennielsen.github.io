@@ -1,14 +1,6 @@
-//Hi this is Owen. Again. Nice to see you! How's your day? I hope you're doing well. I just wanted to share a simple implementation of a doubly-linked list in Java. This code allows you to create a linked list by entering values from the keyboard, and then it prints the contents of the list both from head-to-tail and tail-to-head. Feel free to try it out and let me know if you have any questions or need further assistance!
-
-import java.util.Scanner;
-
 /*
- * Simple doubly-linked list implementation without using java.util.LinkedList.
+ * Doubly-linked list implementation that supports both stack and queue operations.
  * Nodes are represented by the Bucket class which holds a String payload.
- *
- * The program builds a list by reading values from the keyboard until the
- * user indicates they are finished.  It then prints the contents of the list
- * from head-to-tail and again from tail-to-head.
  */
 public class LinkedList {
     /*
@@ -25,44 +17,80 @@ public class LinkedList {
         }
     }
 
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        Bucket head = null;   // first element
-        Bucket tail = null;   // last element
+    private Bucket head;   // first element
+    private Bucket tail;   // last element
 
-        System.out.println("Enter items to add to the linked list.");
-        System.out.println("Leave the input blank to finish (or type 'done').");
-        while (true) {
-            System.out.print("Data: ");
-            String value = in.nextLine();
-            if (value == null || value.trim().isEmpty() || value.equalsIgnoreCase("done")) {
-                break;
-            }
-            Bucket node = new Bucket(value);
-            if (head == null) {
-                // first element
-                head = tail = node;
-            } else {
-                // append to end
-                tail.next = node;
-                node.prev = tail;
-                tail = node;
-            }
-        }
-
-        if (head == null) {
-            System.out.println("No items were added.");
-        } else {
-            System.out.println("\nList from front to back:");
-            printForward(head);
-            System.out.println("\nList from back to front:");
-            printBackward(tail);
-        }
-
-        in.close();
+    // Constructor
+    public LinkedList() {
+        head = null;
+        tail = null;
     }
 
-    private static void printForward(Bucket head) {
+    // Check if the list is empty
+    public boolean isEmpty() {
+        return head == null;
+    }
+
+    // Stack operations: push (add to front), pop (remove from front)
+    public void push(String data) {
+        Bucket node = new Bucket(data);
+        if (head == null) {
+            // first element
+            head = tail = node;
+        } else {
+            // add to front
+            node.next = head;
+            head.prev = node;
+            head = node;
+        }
+    }
+
+    public String pop() {
+        if (isEmpty()) {
+            return null; // or throw exception
+        }
+        String data = head.data;
+        if (head == tail) {
+            // only one element
+            head = tail = null;
+        } else {
+            head = head.next;
+            head.prev = null;
+        }
+        return data;
+    }
+
+    // Queue operations: enqueue (add to end), dequeue (remove from front)
+    public void enqueue(String data) {
+        Bucket node = new Bucket(data);
+        if (head == null) {
+            // first element
+            head = tail = node;
+        } else {
+            // append to end
+            tail.next = node;
+            node.prev = tail;
+            tail = node;
+        }
+    }
+
+    public String dequeue() {
+        if (isEmpty()) {
+            return null; // or throw exception
+        }
+        String data = head.data;
+        if (head == tail) {
+            // only one element
+            head = tail = null;
+        } else {
+            head = head.next;
+            head.prev = null;
+        }
+        return data;
+    }
+
+    // Utility method to print the list from front to back
+    public void printForward() {
         Bucket current = head;
         while (current != null) {
             System.out.println(current.data);
@@ -70,7 +98,8 @@ public class LinkedList {
         }
     }
 
-    private static void printBackward(Bucket tail) {
+    // Utility method to print the list from back to front
+    public void printBackward() {
         Bucket current = tail;
         while (current != null) {
             System.out.println(current.data);
