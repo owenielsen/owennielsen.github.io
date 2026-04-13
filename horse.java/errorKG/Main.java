@@ -1,3 +1,6 @@
+//errror file created by KG reviewed by Owen
+package errorKG;
+
 // error filled file created by KG
 //-Owen
 //capitalization errors, syntax mistakes, codes being placed in the wrong spots
@@ -13,11 +16,11 @@ public class Main {
         System.out.println("am I doing this correctly");
 
         for (int i = 0; i < 10; i++) {
-            System.out.println("the number i is " + i);
+            // Breakpoint 1 set here - replaces: System.out.println("the number i is " + i);
         }
 
         for (int i = 0; i < 10; i++) {
-            System.out.println("the new number i is " + i);
+            // Breakpoint 2 set here - replaces: System.out.println("the new number i is " + i);
         }
 
         int i = 0; // example value for if-check
@@ -26,12 +29,5 @@ public class Main {
         } else {
             System.out.print("i is not equal to zero");
         }
-
-        // what other errors can I put into a source code file?
-        // - missing semicolon
-        // - wrong case on identifiers (System vs system)
-        // - invalid loop syntax (for (Int i=0:i>10;i++) )
-        // - calling methods outside a method body
-        // - unclosed braces, unmatched parens
     }
 }
