@@ -1,3 +1,5 @@
+//I'm not sure what documentation you are talking about in the assignment for this week, but the use is Owen Nielsen, this is a simple study planner that organizes tasks and how to do it is, you enter a task by pressing one, then you can view your tasks by pressing two, you can mark a task complete by pressing three, you can delete a task by pressing four, and you can save and exit by pressing five. The tasks are saved in a text file called tasks.txt and they are loaded when the program starts.
+//there ya go.
 //another amazing a+ file from Owen Nielsen
 
 import java.util.*;
